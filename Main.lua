@@ -70,12 +70,41 @@ function Collection:HonorSpin(Used)
   Framework.Features.HonorSystem.RemoteEvent:FireServer("HonorSpin", Used)
 end
 
-function Collection:GetMatchRace(Race)
-  if Race == getgenv().Configs.Race.RaceLock then
-    return true
-  else
-    return false
+local AccessoryMap = {
+  Orc = "orcAccessory",
+  Goblin = "goblinAccessory",
+  Undead = "undeadAccessory",
+  Dragonkin = "dragonbornAccessory",
+  Sorcerer = "CurseAccessory",
+  Fairy = "FairyHat",
+  Angel = "AngelWings",
+  Demon = "DemonHat",
+  ['Night Elf'] = "ElfWing",
+  Lucifer = "LuciferhatAccessory",
+}
+
+function Collection:GetRaceNameEnglish(Character)
+  for raceName, accessoryName in pairs(AccessoryMap) do
+    if Character:FindFirstChild(accessoryName) then
+      return raceName
+    end
   end
+  return RaceFormat
+end
+
+function Collection:GetMatchRace(Character)
+  local targetAccessory = AccessoryMap[getgenv().Configs.Race.RaceLock]
+
+  if not targetAccessory then
+    for _, accessoryName in pairs(AccessoryMap) do
+      if Character:FindFirstChild(accessoryName) then
+        return false
+      end
+    end
+    return true
+  end
+
+  return Character:FindFirstChild(targetAccessory) ~= nil
 end
 
 function Collection:GetStar(Star)
@@ -126,7 +155,6 @@ console = ConsoleComponent.new(controlSection.__instance or controlSection, {
 
 console:AppendText('<font color="#888888">— Console ready —</font>')
 
-
 while getgenv().Configs.Race.Enabled do task.wait()
 
   local CurrentSpinsLeft = tonumber(SpinsLeft.Text:match("%d+"))
@@ -138,12 +166,18 @@ while getgenv().Configs.Race.Enabled do task.wait()
     continue
   end
 
-  local RaceMatch = Collection:GetMatchRace(RaceFormat)
+  local RaceMatch = Collection:GetMatchRace(Character)
   local StarMatch = Collection:GetStar(StarFormat)
 
   if not RaceMatch then
     if CurrentSpinsLeft <= 0 then
       console:AppendText("No Spins Left [1]")
+      _G.Horst_SetDescription("NOT SPIN LEFT❌")
+      if RollbackState then
+        console:AppendText("Rollback active, Rejoin in 3 Second 🔴")
+        task.wait(3)
+        TeleportService:Teleport(game.PlaceId, LocalPlayer)
+      end
       break
     end
 
@@ -165,20 +199,23 @@ while getgenv().Configs.Race.Enabled do task.wait()
 
     if NewStarFormat and NewRaceFormat then
       StarFormat, RaceFormat = NewStarFormat, NewRaceFormat
-      RaceMatch = Collection:GetMatchRace(RaceFormat)
+      RaceMatch = Collection:GetMatchRace(Character)
       StarMatch = Collection:GetStar(StarFormat)
     end
 
     if SpinUsed >= getgenv().Configs.Race["Amount Reroll"] and not RaceMatch then
-      console:AppendText("Race : " .. string.rep("⭐", StarFormat) .. " " .. RaceFormat)
+      console:AppendText("Race : " .. StarsEmoji .. " " .. RaceFormat)
       console:AppendText("Glory Core 🍊 : " .. GloryCoreAmount.Text)
       console:AppendText("Spin Left : " .. SpinsLeft.Text)
       console:AppendText("Race not matched, Rejoin in 3 Second 🔴")
+      _G.Horst_SetDescription("NOT RACE MATCH ❌")
       task.wait(3)
       TeleportService:Teleport(game.PlaceId, LocalPlayer)
     elseif SpinUsed >= 0 and RaceMatch then
       console:AppendText("Race matched turn off rollback, Rejoin for save data in 3 Second")
       Collection:SetRollback(false)
+      task.wait()
+      _G.Horst_SetDescription("✅" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. CurrentSpinsLeft)
       task.wait(3)
       TeleportService:Teleport(game.PlaceId, LocalPlayer)
       break
@@ -194,6 +231,12 @@ while getgenv().Configs.Race.Enabled do task.wait()
   if RaceMatch and not StarMatch then
     if CurrentSpinsLeft <= 0 then
       console:AppendText("No Spins Left [2]")
+      _G.Horst_SetDescription("NOT SPIN LEFT ❌")
+      if RollbackState then
+        console:AppendText("Rollback active, Rejoin in 3 Second 🔴")
+        task.wait(3)
+        TeleportService:Teleport(game.PlaceId, LocalPlayer)
+      end
       break
     end
 
@@ -214,24 +257,28 @@ while getgenv().Configs.Race.Enabled do task.wait()
 
     if NewStarFormat and NewRaceFormat then
       StarFormat, RaceFormat = NewStarFormat, NewRaceFormat
-      RaceMatch = Collection:GetMatchRace(RaceFormat)
+      RaceMatch = Collection:GetMatchRace(Character)
       StarMatch = Collection:GetStar(StarFormat)
     end
 
     if SpinUsed >= getgenv().Configs.Race["Amount Reroll"] and not (RaceMatch and StarMatch) then
-      console:AppendText("Race : " .. string.rep("⭐", StarFormat) .. " " .. RaceFormat)
+      console:AppendText("Race : " .. StarsEmoji .. " " .. RaceFormat)
       console:AppendText("Glory Core 🍊 : " .. GloryCoreAmount.Text)
       console:AppendText("Spin Left : " .. SpinsLeft.Text)
       console:AppendText("Star not matched, Rejoin in 3 Second")
+      task.wait()
+      _G.Horst_SetDescription("NOT STAR MATCH ❌")
       task.wait(3)
       TeleportService:Teleport(game.PlaceId, LocalPlayer)
       break
     elseif SpinUsed >= 0 and RaceMatch and StarMatch then
-      console:AppendText("Race : " .. string.rep("⭐", StarFormat) .. " " .. RaceFormat)
+      console:AppendText("Race : " .. StarsEmoji .. " " .. RaceFormat)
       console:AppendText("Glory Core 🍊 : " .. GloryCoreAmount.Text)
       console:AppendText("Star matched turn off rollback, Rejoin for save data in 3 Second 🔴")
       console:AppendText("Success auto reroll race")
       Collection:SetRollback(false)
+      task.wait()
+      _G.Horst_SetDescription("✅" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. CurrentSpinsLeft)
       task.wait(3)
       TeleportService:Teleport(game.PlaceId, LocalPlayer)
       break
@@ -239,11 +286,13 @@ while getgenv().Configs.Race.Enabled do task.wait()
   end
 
   if RaceMatch and StarMatch then
-    console:AppendText("Race : " .. string.rep("⭐", StarFormat) .. " " .. RaceFormat)
+    console:AppendText("Race : " .. StarsEmoji .. " " .. RaceFormat)
     console:AppendText("Glory Core 🍊 : " .. GloryCoreAmount.Text)
-    console:AppendText("Spin Left : " .. SpinsLeft.Text)
+    console:AppendText("Spin Left : " .. CurrentSpinsLeft)
     console:AppendText("Success auto reroll race 🟢")
     FinishRerollRace = true
+    task.wait()
+    _G.Horst_SetDescription("✅" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. CurrentSpinsLeft)
     break
   end
 end
@@ -260,6 +309,7 @@ if FinishRerollRace or not getgenv().Configs.Race.Enabled then
 
       if CurrentTicket < 160 then
         console:AppendText("No Ticket Left")
+        _G.Horst_SetDescription("NOT TICKET LEFT ❌")
         break
       end
 
@@ -280,14 +330,24 @@ if FinishRerollRace or not getgenv().Configs.Race.Enabled then
 
       if HonorSpinUsed >= getgenv().Configs.GloryCore['Spin Settings']['Spin Amount'] and GloryCoreNew < GloryCoreTarget then
         console:AppendText('<font color="#FF4444">[ Dont got any Glory core, rejoin in 3 Second ]</font>')
+        task.wait()
+        _G.Horst_SetDescription("FARMING GROLY CORE ...")
         task.wait(4)
         TeleportService:Teleport(game.PlaceId, LocalPlayer)
         break
       elseif HonorSpinUsed >= 0 and GloryCoreNew >= GloryCoreTarget then
         console:AppendText('<font color="#FFD700">[ Got Glory Core! ]</font>')
+        _G.Horst_SetDescription("✅🍊" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. tonumber(SpinsLeft.Text:match("%d+")))
+        task.wait()
         Collection:SetRollback(false)
         break
       end
     end
   end
+end
+
+if not getgenv().Configs.Race.Enabled and not getgenv().Configs.GloryCore.Enabled then
+  console:AppendText('<font color="#FFD700">[ NO CONFIG ENABLE SEND LOG TO HORST ]</font>')
+  task.wait()
+  _G.Horst_SetDescription("✅🍊" .. " Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. tonumber(SpinsLeft.Text:match("%d+")))
 end

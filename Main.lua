@@ -342,7 +342,7 @@ if FinishRerollRace or not getgenv().Configs.Race.Enabled then
         TeleportService:Teleport(game.PlaceId, LocalPlayer)
         break
       elseif HonorSpinUsed >= 0 and GloryCoreNew < GloryCoreTarget and GloryCoreNew > GloryCoreOld then
-      console:AppendText('<font color="#FFD700">Race matched turn off rollback, Rejoin for save data in 3 Second</font>')
+      console:AppendText('<font color="#FFD700">Got Glory Core turn off rollback, Rejoin for save data in 3 Second</font>')
       Collection:SetRollback(false)
       task.wait()
       Collection:SetDescription("✅🍊" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. '/' .. GloryCoreTarget .. ". 🔄Spin Left: " .. tonumber(SpinsLeft.Text:match("%d+")))

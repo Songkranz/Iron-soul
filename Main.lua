@@ -307,7 +307,6 @@ end
 if FinishRerollRace or not getgenv().Configs.Race.Enabled then
   while getgenv().Configs.GloryCore.Enabled do task.wait()
 
-    local GloryCoreNew = tonumber(GloryCoreAmount.Text)
     local CurrentTicket = tonumber(LotteryTicket.Text)
 
 
@@ -334,26 +333,29 @@ if FinishRerollRace or not getgenv().Configs.Race.Enabled then
 
       task.wait(6)
 
-      if HonorSpinUsed >= getgenv().Configs.GloryCore['Spin Settings']['Spin Amount'] and GloryCoreNew < GloryCoreOld then
-        console:AppendText('<font color="#FF4444">[ Dont got any Glory core, rejoin in 3 Second ]</font>')
-        task.wait()
-        Collection:SetDescription("FARMING GROLY CORE ...")
-        task.wait(4)
-        TeleportService:Teleport(game.PlaceId, LocalPlayer)
-        break
-      elseif HonorSpinUsed >= 0 and GloryCoreNew < GloryCoreTarget and GloryCoreNew > GloryCoreOld then
-      console:AppendText('<font color="#FFD700">Got Glory Core turn off rollback, Rejoin for save data in 3 Second</font>')
-      Collection:SetRollback(false)
-      task.wait()
-      Collection:SetDescription("✅🍊" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. '/' .. GloryCoreTarget .. ". 🔄Spin Left: " .. tonumber(SpinsLeft.Text:match("%d+")))
-      task.wait(3)
-      TeleportService:Teleport(game.PlaceId, LocalPlayer)
-      elseif GloryCoreNew >= GloryCoreTarget then
+      local GloryCoreNew = tonumber(GloryCoreAmount.Text)
+
+      if GloryCoreNew >= GloryCoreTarget then
         console:AppendText('<font color="#FFD700">[ Got All Glory Core! ]</font>')
         task.wait()
         Collection:SetDescription("✅🍊" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. '/' .. GloryCoreTarget .. ". 🔄Spin Left: " .. tonumber(SpinsLeft.Text:match("%d+")))
         task.wait()
         Collection:SetRollback(false)
+        break
+      elseif HonorSpinUsed >= getgenv().Configs.GloryCore['Spin Settings']['Spin Amount'] then
+        if GloryCoreNew > GloryCoreOld then
+          console:AppendText('<font color="#FFD700">Got Glory Core turn off rollback, Rejoin for save data in 3 Second</font>')
+          Collection:SetRollback(false)
+          task.wait()
+          Collection:SetDescription("✅🍊" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. '/' .. GloryCoreTarget .. ". 🔄Spin Left: " .. tonumber(SpinsLeft.Text:match("%d+")))
+          task.wait(3)
+        else
+          console:AppendText('<font color="#FF4444">[ Dont got any Glory core, rejoin in 3 Second ]</font>')
+          task.wait()
+          Collection:SetDescription("FARMING GROLY CORE ...")
+          task.wait(4)
+        end
+        TeleportService:Teleport(game.PlaceId, LocalPlayer)
         break
       end
     end

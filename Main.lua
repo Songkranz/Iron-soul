@@ -337,6 +337,7 @@ if FinishRerollRace or not getgenv().Configs.Race.Enabled then
         break
       elseif HonorSpinUsed >= 0 and GloryCoreNew >= GloryCoreTarget then
         console:AppendText('<font color="#FFD700">[ Got Glory Core! ]</font>')
+        task.wait()
         _G.Horst_SetDescription("✅🍊" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. tonumber(SpinsLeft.Text:match("%d+")))
         task.wait()
         Collection:SetRollback(false)

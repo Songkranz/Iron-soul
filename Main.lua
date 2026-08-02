@@ -14,6 +14,12 @@ local Framework = ReplicatedStorage:WaitForChild("Framework")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
+function Collection:SetDescription(Text)
+  if getgenv().Configs.Log.Enabled then
+    _G.Horst_SetDescription(Text)
+  end
+end
+
 function Collection:GetRootPart(Character)
   return Character:WaitForChild("HumanoidRootPart")
 end
@@ -48,7 +54,7 @@ local StarsEmoji = string.rep("⭐", StarFormat)
 local SpinUsed = 0
 local HonorSpinUsed = 0
 local GloryCoreOld = tonumber(GloryCoreAmount.Text)
-local GloryCoreTarget = GloryCoreOld + getgenv().Configs.GloryCore['Spin Settings']['Glory Core Amount']
+local GloryCoreTarget = getgenv().Configs.GloryCore['Spin Settings']['Glory Core Amount']
 local RollbackState = false
 local FinishRerollRace = false
 
@@ -172,7 +178,7 @@ while getgenv().Configs.Race.Enabled do task.wait()
   if not RaceMatch then
     if CurrentSpinsLeft <= 0 then
       console:AppendText("No Spins Left [1]")
-      _G.Horst_SetDescription("NOT SPIN LEFT❌")
+      Collection:SetDescription("NOT SPIN LEFT❌")
       if RollbackState then
         console:AppendText("Rollback active, Rejoin in 3 Second 🔴")
         task.wait(3)
@@ -208,14 +214,14 @@ while getgenv().Configs.Race.Enabled do task.wait()
       console:AppendText("Glory Core 🍊 : " .. GloryCoreAmount.Text)
       console:AppendText("Spin Left : " .. SpinsLeft.Text)
       console:AppendText("Race not matched, Rejoin in 3 Second 🔴")
-      _G.Horst_SetDescription("NOT RACE MATCH ❌")
+      Collection:SetDescription("NOT RACE MATCH ❌")
       task.wait(3)
       TeleportService:Teleport(game.PlaceId, LocalPlayer)
     elseif SpinUsed >= 0 and RaceMatch then
       console:AppendText("Race matched turn off rollback, Rejoin for save data in 3 Second")
       Collection:SetRollback(false)
       task.wait()
-      _G.Horst_SetDescription("✅" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. CurrentSpinsLeft)
+      Collection:SetDescription("✅" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. CurrentSpinsLeft)
       task.wait(3)
       TeleportService:Teleport(game.PlaceId, LocalPlayer)
       break
@@ -231,7 +237,7 @@ while getgenv().Configs.Race.Enabled do task.wait()
   if RaceMatch and not StarMatch then
     if CurrentSpinsLeft <= 0 then
       console:AppendText("No Spins Left [2]")
-      _G.Horst_SetDescription("NOT SPIN LEFT ❌")
+      Collection:SetDescription("NOT SPIN LEFT ❌")
       if RollbackState then
         console:AppendText("Rollback active, Rejoin in 3 Second 🔴")
         task.wait(3)
@@ -267,7 +273,7 @@ while getgenv().Configs.Race.Enabled do task.wait()
       console:AppendText("Spin Left : " .. SpinsLeft.Text)
       console:AppendText("Star not matched, Rejoin in 3 Second")
       task.wait()
-      _G.Horst_SetDescription("NOT STAR MATCH ❌")
+      Collection:SetDescription("NOT STAR MATCH ❌")
       task.wait(3)
       TeleportService:Teleport(game.PlaceId, LocalPlayer)
       break
@@ -278,7 +284,7 @@ while getgenv().Configs.Race.Enabled do task.wait()
       console:AppendText("Success auto reroll race")
       Collection:SetRollback(false)
       task.wait()
-      _G.Horst_SetDescription("✅🍊" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. CurrentSpinsLeft)
+      Collection:SetDescription("✅🍊" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. CurrentSpinsLeft)
       task.wait(3)
       TeleportService:Teleport(game.PlaceId, LocalPlayer)
       break
@@ -292,7 +298,7 @@ while getgenv().Configs.Race.Enabled do task.wait()
     console:AppendText("Success auto reroll race 🟢")
     FinishRerollRace = true
     task.wait()
-    _G.Horst_SetDescription("✅" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. CurrentSpinsLeft)
+    Collection:SetDescription("✅" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. CurrentSpinsLeft)
     break
   end
 end
@@ -309,7 +315,7 @@ if FinishRerollRace or not getgenv().Configs.Race.Enabled then
 
       if CurrentTicket < 160 then
         console:AppendText("No Ticket Left")
-        _G.Horst_SetDescription("NOT TICKET LEFT ❌")
+        Collection:SetDescription("NOT TICKET LEFT ❌")
         break
       end
 
@@ -328,17 +334,24 @@ if FinishRerollRace or not getgenv().Configs.Race.Enabled then
 
       task.wait(6)
 
-      if HonorSpinUsed >= getgenv().Configs.GloryCore['Spin Settings']['Spin Amount'] and GloryCoreNew < GloryCoreTarget then
+      if HonorSpinUsed >= getgenv().Configs.GloryCore['Spin Settings']['Spin Amount'] and GloryCoreNew < GloryCoreOld then
         console:AppendText('<font color="#FF4444">[ Dont got any Glory core, rejoin in 3 Second ]</font>')
         task.wait()
-        _G.Horst_SetDescription("FARMING GROLY CORE ...")
+        Collection:SetDescription("FARMING GROLY CORE ...")
         task.wait(4)
         TeleportService:Teleport(game.PlaceId, LocalPlayer)
         break
-      elseif HonorSpinUsed >= 0 and GloryCoreNew >= GloryCoreTarget then
-        console:AppendText('<font color="#FFD700">[ Got Glory Core! ]</font>')
+      elseif HonorSpinUsed >= 0 and GloryCoreNew < GloryCoreTarget and GloryCoreNew > GloryCoreOld then
+      console:AppendText('<font color="#FFD700">Race matched turn off rollback, Rejoin for save data in 3 Second</font>')
+      Collection:SetRollback(false)
+      task.wait()
+      Collection:SetDescription("✅🍊" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. '/' .. GloryCoreTarget .. ". 🔄Spin Left: " .. tonumber(SpinsLeft.Text:match("%d+")))
+      task.wait(3)
+      TeleportService:Teleport(game.PlaceId, LocalPlayer)
+      elseif GloryCoreNew >= GloryCoreTarget then
+        console:AppendText('<font color="#FFD700">[ Got All Glory Core! ]</font>')
         task.wait()
-        _G.Horst_SetDescription("✅🍊" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. tonumber(SpinsLeft.Text:match("%d+")))
+        Collection:SetDescription("✅🍊" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. '/' .. GloryCoreTarget .. ". 🔄Spin Left: " .. tonumber(SpinsLeft.Text:match("%d+")))
         task.wait()
         Collection:SetRollback(false)
         break
@@ -350,5 +363,5 @@ end
 if not getgenv().Configs.Race.Enabled and not getgenv().Configs.GloryCore.Enabled then
   console:AppendText('<font color="#FFD700">[ NO CONFIG ENABLE SEND LOG TO HORST ]</font>')
   task.wait()
-  _G.Horst_SetDescription("✅🍊" .. " Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. tonumber(SpinsLeft.Text:match("%d+")))
+  Collection:SetDescription("✅🍊" .. " Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. '/' .. GloryCoreTarget .. ". 🔄Spin Left: " .. tonumber(SpinsLeft.Text:match("%d+")))
 end

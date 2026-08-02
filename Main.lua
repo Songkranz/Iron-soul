@@ -278,7 +278,7 @@ while getgenv().Configs.Race.Enabled do task.wait()
       console:AppendText("Success auto reroll race")
       Collection:SetRollback(false)
       task.wait()
-      _G.Horst_SetDescription("✅" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. CurrentSpinsLeft)
+      _G.Horst_SetDescription("✅🍊" .. " 🧌 Race: " .. StarsEmoji .. " " .. Collection:GetRaceNameEnglish(Character) .. ". 🍊 Glory Core: " .. GloryCoreAmount.Text .. ". 🔄Spin Left: " .. CurrentSpinsLeft)
       task.wait(3)
       TeleportService:Teleport(game.PlaceId, LocalPlayer)
       break

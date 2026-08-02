@@ -1,20 +1,3 @@
-getgenv().Configs = {
-  ['Race'] = {
-    ['Enabled'] = true,
-    ['RaceLock'] = "Lucifer",
-    ['Star'] = 1,         -- อยากให้กี่ดาว
-    ['Amount Reroll'] = 1 -- อยากให้สุ่มกี่ครั้ง
-  },
-  ['GloryCore'] = {
-    ['Enabled'] = true,
-    ['Spin Settings'] = {
-      ['Glory Core Amount'] = 1, -- อยากให้เพิ่มมากี่อัน
-      ['Spin Amount'] = 1,       -- อยากให้สุ่มกี่ครั้ง
-      ['Use'] = 1     -- อยากให้สุ่มที่ล่ะเท่าไหร่ 1, 10
-    }
-  }
-}
-
 repeat task.wait() until game:IsLoaded()
 repeat task.wait(5) until game.Players.LocalPlayer
 

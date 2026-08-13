@@ -60,10 +60,10 @@ local FinishRerollRace = false
 
 function Collection:SetRollback(Value)
   if Value then
-    Framework.Features.TutoriialSystem.RemoteEvent:FireServer("SetStep", "\xFF", nil)
+    Framework.Systems.RedPointSystem.RedPointUtil.RemoteEvent:FireServer( "Dismiss", "Guidebook_Pet", "\xFF" )
     RollbackState = true
   else
-    Framework.Features.TutoriialSystem.RemoteEvent:FireServer("SetStep", "1", nil)
+    Framework.Systems.RedPointSystem.RedPointUtil.RemoteEvent:FireServer( "Dismiss", "Guidebook_Pet", 1 )
     RollbackState = false
   end
 end
@@ -352,7 +352,7 @@ if FinishRerollRace or not getgenv().Configs.Race.Enabled then
         else
           console:AppendText('<font color="#FF4444">[ Dont got any Glory core, rejoin in 3 Second ]</font>')
           task.wait()
-          Collection:SetDescription("FARMING GROLY CORE ...")
+          Collection:SetDescription("FARMING GROLY CORE " .. GloryCoreNew .. '/' .. GloryCoreTarget )
           task.wait(4)
         end
         TeleportService:Teleport(game.PlaceId, LocalPlayer)
